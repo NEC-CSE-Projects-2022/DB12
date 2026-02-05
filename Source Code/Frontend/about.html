@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake Detection Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+           :root {
+            --primary-color: #0be780;
+            --secondary-color: #00cc6a;
+            --text-color: #ffffff;
+            --bg-color: #000000;
+            --nav-bg: rgba(190, 247, 126, 0.24);
+            --nav-border-radius: 20px;
+            --box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            --card-bg: rgba(11, 231, 128, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+        
+        .container {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+        }
+        
+        /* Modern Navbar */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--nav-border-radius);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background-color: var(--primary-color);
+            color: #000;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.2);
+        }
+        
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            z-index: 99;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .mobile-menu a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .mobile-menu a:hover {
+            color: var(--primary-color);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* Main content */
+        .about-container {
+            padding: 120px 20px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Gradient overlay effect */
+        .about-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(11, 231, 128, 0.1) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .about-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .about-header h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+        
+        .about-header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* Section headers */
+        .section-header {
+            text-align: center;
+            margin: 60px 0 40px;
+            position: relative;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--secondary-color);
+        }
+        
+        /* Grid system */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        /* Modern Card Design */
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(11, 231, 128, 0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(11, 231, 128, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            position: relative;
+        }
+        
+        .feature-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .feature-card:hover h3::after {
+            width: 100%;
+        }
+        
+        .feature-card p {
+            margin-bottom: 20px;
+            line-height: 1.7;
+            opacity: 0.9;
+            flex-grow: 1;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: auto;
+        }
+        
+        .tech-item {
+            background: rgba(11, 231, 128, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        /* Team section */
+        .team-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(11, 231, 128, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .team-img-container {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            border: 3px solid var(--primary-color);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .team-card:hover .team-img-container {
+            transform: scale(1.05);
+        }
+        
+        .team-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .team-card:hover .team-img {
+            transform: scale(1.1);
+        }
+        
+        .team-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .team-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .team-card:hover h3::after {
+            width: 100%;
+        }
+        
+        .team-card .role {
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .team-card p {
+            margin-bottom: 25px;
+            font-size: 1rem;
+            line-height: 1.7;
+            flex-grow: 1;
+            opacity: 0.9;
+        }
+        
+        .team-social {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .team-social a {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .team-social a:hover {
+            color: var(--primary-color);
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 204, 106, 0.4);
+        }
+        
+        /* College card */
+        .college-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .college-img-container {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .college-img {
+            width: auto;
+            height: 100%;
+            max-width: 100%;
+            object-fit: contain; /* Changed from cover to contain */
+            transition: transform 0.3s ease;
+        }
+        
+        .college-info {
+            width: 100%;
+            position: relative;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .college-info h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .college-info p {
+            line-height: 1.7;
+            margin: 0;
+            color: var(--text-color);
+        }
+        
+        .college-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(11, 231, 128, 0.3);
+        }
+        
+        /* Project Requirements Section */
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .requirement-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .requirement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(11, 231, 128, 0.2);
+        }
+        
+        .requirement-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .requirement-card h3 i {
+            color: var(--secondary-color);
+        }
+        
+        .requirement-list {
+            list-style-type: none;
+        }
+        
+        .requirement-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.6;
+        }
+        
+        .requirement-list li::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .nav-links {
+                gap: 20px;
+            }
+            
+            .card-grid, .requirements-grid {
+                gap: 25px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+            
+            .about-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .college-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 30px;
+            }
+            
+            .college-img-container {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .feature-card, .team-card, .requirement-card {
+                padding: 25px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .about-container {
+                padding: 100px 15px 40px;
+            }
+            
+            .card-grid, .requirements-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .btn {
+                padding: 8px 20px;
+            }
+            
+            .team-img-container {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+   <!-- Navbar -->
+<nav class="navbar">
+    <a href="#" class="logo">DeepfakeDetect</a>
+    
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="contact.html">contact us</a>
+        <a href="tryproject.html">try-deepfake</a>
+    </div>
+    <button class="hamburger" id="hamburger">
+        <i class="fas fa-bars"></i>
+    </button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <button class="close-btn" id="closeBtn">
+        <i class="fas fa-times"></i>
+    </button>
+    <a href="/index.html">Home</a>
+    <a href="/contact.html">contact us</a>
+    <a href="/tryproject.html">try-deepfake</a>
+</div>
+<div class="about-container">
+    <div class="about-header">
+        <h1>About Our Project</h1>
+        <p>We are developing an advanced audio deepfake detection system to combat the rising threat of synthetic voice manipulation. Our solution leverages powerful AI models to accurately distinguish real speech from AI-generated audio, ensuring authenticity and trust in digital communication.</p>
+    </div>
+    
+    <!-- Project Features Section -->
+    <div class="section-header">
+        <h2>Key Features</h2>
+    </div>
+    <div class="card-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3>Advanced Detection</h3>
+            <p>Utilizes state-of-the-art machine learning models to identify subtle artifacts in deepfake audio, accurately distinguishing synthetic voices from genuine human speech.</p>
+            <div class="tech-stack">
+                <span class="tech-item">ECAPA-TDNN</span>
+                <span class="tech-item">TIMIT-TTS Corpus</span>
+                <span class="tech-item">Spectrogram Analysis</span>
+
+
+            </div>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3>Real-time Analysis</h3>
+            <p>Provides near real-time detection capabilities for live audio streams and fast analysis of uploaded speech recordings.</p>
+<div class="tech-stack">
+    <span class="tech-item">PyTorch</span>
+    <span class="tech-item">Torchaudio</span>
+    <span class="tech-item">Streamlit</span>
+</div>
+
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Detailed Reports</h3>
+            <p>Generates detailed reports displaying detection outcomes, confidence scores, and highlighted audio regions indicating potential deepfake segments.</p>
+<div class="tech-stack">
+    <span class="tech-item">Spectrogram Visualization</span>
+    <span class="tech-item">Confidence Scoring</span>
+    <span class="tech-item">Report Generation</span>
+</div>
+
+        </div>
+    </div>
+    
+    <!-- Project Requirements Section -->
+    <div class="section-header">
+        <h2>Project Requirements</h2>
+    </div>
+    <div class="requirements-grid">
+        <div class="requirement-card">
+            <h3><i class="fas fa-laptop-code"></i> Technical Requirements</h3>
+            <ul class="requirement-list">
+                <li>Develop deep learning models with ≥95% accuracy</li>
+                <li>Support for common video formats (MP4, AVI, MOV)</li>
+                <li>Real-time processing capability (≤2 seconds delay)</li>
+                <li>API endpoints for integration with other systems</li>
+                <li>Cross-platform compatibility (Windows, macOS, Linux)</li>
+            </ul>
+        </div>
+        
+        <div class="requirement-card">
+            <h3><i class="fas fa-users"></i> User Requirements</h3>
+            <ul class="requirement-list">
+                <li>Intuitive web interface for non-technical users</li>
+                <li>Mobile application for on-the-go detection</li>
+                <li>Browser extension for social media platforms</li>
+                <li>Detailed tutorials and documentation</li>
+                <li>Multi-language support</li>
+            </ul>
+        </div>
+        
+        <div class="requirement-card">
+            <h3><i class="fas fa-server"></i> System Requirements</h3>
+            <ul class="requirement-list">
+                <li>Cloud-based deployment with scalable infrastructure</li>
+                <li>GPU-accelerated servers for model inference</li>
+                <li>Secure user authentication and data protection</li>
+                <li>Automated backup and recovery systems</li>
+                <li>Monitoring and alerting systems</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Technology Stack Section -->
+    <div class="section-header">
+        <h2>Technology Stack</h2>
+    </div>
+    <div class="card-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h3>AI/ML Framework</h3>
+            <p>Our deep learning models are built using TensorFlow and PyTorch, optimized for high-performance deepfake detection.</p>
+            <div class="tech-stack">
+                <span class="tech-item">TensorFlow</span>
+                <span class="tech-item">PyTorch</span>
+                <span class="tech-item">Keras</span>
+            </div>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-code"></i>
+            </div>
+            <h3>Backend</h3>
+            <p>Robust server infrastructure built with modern technologies to handle complex media processing tasks efficiently.</p>
+            <div class="tech-stack">
+                <span class="tech-item">Python</span>
+                <span class="tech-item">Flask</span>
+                <span class="tech-item">DL models</span>
+            </div>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-paint-brush"></i>
+            </div>
+            <h3>Frontend</h3>
+            <p>Interactive user interfaces designed for optimal user experience across all devices and platforms.</p>
+            <div class="tech-stack">
+                <span class="tech-item">Html</span>
+                <span class="tech-item">Css</span>
+                <span class="tech-item">Java Script</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Team Section -->
+    <div class="section-header">
+        <h2>Meet The Team</h2>
+    </div>
+    <div class="card-grid">
+        <div class="team-card">
+            <div class="team-img-container">
+                <img src="{{ url_for('static', filename='images/HEMANTH.jpg') }}" alt="Team Member" class="team-img">
+            </div>
+            <h3>B.HEMANTH KUMAR </h3>
+            <p class="role">Team Leader</p>
+        </div>
+        
+        <div class="team-card">
+            <div class="team-img-container">
+                <img src="{{ url_for('static', filename='images/nithin.jpg') }}" alt="Team Member" class="team-img">
+            </div>
+            <h3>G.NITHIN </h3>
+            <p class="role">Team Member</p>
+        </div>
+        
+        <div class="team-card">
+            <div class="team-img-container">
+                <img src="{{ url_for('static', filename='images/arjun.jpg') }}" alt="Team Member" class="team-img">
+            </div>
+            <h3>K.ARJUN REDDY</h3>
+            <p class="role">Team Member</p>
+        </div>
+    </div>
+    
+    <!-- College Card -->
+    <div class="college-card">
+        <div class="college-img-container">
+            <img src="{{ url_for('static', filename='images/coll.png') }}" alt="College Image">
+        </div>
+        <div class="college-info">
+            <h2>Our Institution</h2>
+            <p>NMIET an institute of excellence in Engineering and Technical Education was established by the Hon. Smt. Nutan Vidya Prasarak Mandal, Nilanga Dist. Latur in 2010 with an aim to provide quality technical education to students in rural areas.</p>
+        </div>
+    </div>
+</div>
+    <script>
+        // Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const closeBtn = document.getElementById('closeBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        // Toggle mobile menu
+        function toggleMenu() {
+            mobileMenu.classList.toggle('active');
+        }
+        
+        hamburger.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        
+        // Close menu when clicking on a link
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+        
+        // Close menu when clicking outside
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) {
+                toggleMenu();
+            }
+        });
+        
+        // Make navbar more opaque when scrolling
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 10) {
+                navbar.style.background = 'rgba(0, 0, 0, 0.9)';
+            } else {
+                navbar.style.background = 'rgba(0, 0, 0, 0.8)';
+            }
+        });
+    </script>
+</body>
+</html>
