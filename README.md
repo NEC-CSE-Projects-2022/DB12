@@ -2,15 +2,16 @@
 # DB12-Audio-Based Deepfake Detection Leveraging ECAPA-TDNN and TIMIT-TTS Corpus
 
 
-## Team Info
-- 22471A05XX — **Name** ( [LinkedIn](https://linkedin.com/in/xxxxxxxxxx) )
-_Work Done: xxxxxxxxxx_
+## 👥 Team Info
 
-- 22471A05XX — **Name** ( [LinkedIn](https://linkedin.com/in/xxxxxxxxxx) )
-_Work Done: xxxxxxxxxx_
+- 23475A0524 — Hemanth Kumar Boddana**  ( [LinkedIn]([https://linkedin.com/in/xxxxxxxxxx](https://linkedin.com/in/hemanthkumar-boddana-93a1642a2)) )
+Work Done: Led the project development, implemented ECAPA-TDNN embedding extraction, designed the deepfake detection pipeline, handled model training, evaluation, and overall system integration.
 
-- 22471A05XX — **Name** ( [LinkedIn](https://linkedin.com/in/xxxxxxxxxx) )
-_Work Done: xxxxxxxxxx_
+- 23475A0520 — G. Nithin**( [LinkedIn](https://linkedin.com/in/xxxxxxxxxx) )  
+Work Done: Assisted in dataset preparation, preprocessing scripts, training support, and performance evaluation of the deepfake detection model.
+
+- 22471A05N0 — K. Arjun Reddy**( [LinkedIn](https://linkedin.com/in/xxxxxxxxxx) )  
+Work Done: Helped with experimental setup, model testing, result analysis, and documentation support.
 
 - 22471A05XX — **Name** ( [LinkedIn](https://linkedin.com/in/xxxxxxxxxx) )
 _Work Done: xxxxxxxxxx_
