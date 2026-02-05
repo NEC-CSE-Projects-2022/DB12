@@ -4,7 +4,7 @@
 
 ## 👥 Team Info
 
-- 23475A0524 — Hemanth Kumar Boddana**  ( [LinkedIn]([https://linkedin.com/in/xxxxxxxxxx](https://linkedin.com/in/hemanthkumar-boddana-93a1642a2)) )
+- 23475A0524 — Hemanth Kumar Boddana**  ( [LinkedIn](https://linkedin.com/in/hemanthkumar-boddana-93a1642a2) )
 Work Done: Led the project development, implemented ECAPA-TDNN embedding extraction, designed the deepfake detection pipeline, handled model training, evaluation, and overall system integration.
 
 - 23475A0520 — G. Nithin**( [LinkedIn](https://linkedin.com/in/xxxxxxxxxx) )  
