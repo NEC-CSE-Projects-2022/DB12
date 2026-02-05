@@ -2,7 +2,6 @@
 # DB12-Audio-Based Deepfake Detection Leveraging ECAPA-TDNN and TIMIT-TTS Corpus
 
 
-
 ## Team Info
 - 22471A05XX — **Name** ( [LinkedIn](https://linkedin.com/in/xxxxxxxxxx) )
 _Work Done: xxxxxxxxxx_
