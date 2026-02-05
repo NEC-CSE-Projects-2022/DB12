@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepfakeDetect | TIMIT-TTS Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0be780;
+            --secondary-color: #00cc6a;
+            --text-color: #256600;
+            --bg-color: #000000;
+            --nav-bg: rgba(190, 247, 126, 0.24);
+            --nav-border-radius: 20px;
+            --box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            --accent-color: #4fc3f7;
+            --light-color: #0a0a0a;
+            --dark-color: #e0ffe0;
+            --success-color: #0be780;
+            --warning-color: #ffc107;
+            --danger-color: #ff4d4d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-color);
+            overflow-x: hidden;
+        }
+        
+        .container {
+            position: relative;
+            min-height:10vh;
+            width: 100%;
+            padding-top: 50px;
+        }
+        
+        /* Modern Navbar */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--nav-border-radius);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--dark-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background-color: var(--primary-color);
+            color: #000;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+           
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.2);
+        }
+        
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--dark-color);
+            font-size: 1.5rem;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            z-index: 99;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .mobile-menu a {
+            color: var(--dark-color);
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .mobile-menu a:hover {
+            color: var(--primary-color);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 1.8rem;
+            color: var(--dark-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* TIMIT-TTS Showcase Styles */
+        header {
+            background-color: rgba(11, 231, 128, 0.1);
+            color: var(--primary-color);
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(11, 231, 128, 0.3);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 15px;
+            color: var(--dark-color);
+        }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(11, 231, 128, 0.1);
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(11, 231, 128, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        
+        .card-title {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 1px solid rgba(11, 231, 128, 0.3);
+            padding-bottom: 15px;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.2);
+        }
+        
+        button:disabled {
+            background-color: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result-display {
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        
+        .real {
+            background-color: rgba(11, 231, 128, 0.15);
+            border-left: 4px solid var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .synthetic {
+            background-color: rgba(255, 77, 77, 0.15);
+            border-left: 4px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .confidence-meter {
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), var(--danger-color));
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            border: 1px solid rgba(11, 231, 128, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(11, 231, 128, 0.1);
+            border-color: rgba(11, 231, 128, 0.3);
+        }
+        
+        .feature-label {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .visualization {
+            height: 250px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-color);
+            border: 1px solid rgba(11, 231, 128, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 30px;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(11, 231, 128, 0.2);
+        }
+        
+        /* Loader styles (inserted) */
+        .loader-wrapper {
+          position: fixed;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0,0,0,0.65);
+          z-index: 9999;
+          font-family: "Poppins", sans-serif;
+          font-size: 1.6em;
+          font-weight: 600;
+          color: #fff;
+          pointer-events: none;
+        }
+
+        .loader {
+          position: absolute;
+          height: 80px;
+          width: 420px;
+          z-index: 1;
+          background-color: transparent;
+          mask: repeating-linear-gradient(
+            90deg,
+            transparent 0,
+            transparent 6px,
+            black 7px,
+            black 8px
+          );
+        }
+
+        .loader::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-image: radial-gradient(circle at 50% 50%, #ff0 0%, transparent 50%),
+            radial-gradient(circle at 45% 45%, #f00 0%, transparent 45%),
+            radial-gradient(circle at 55% 55%, #0ff 0%, transparent 45%),
+            radial-gradient(circle at 45% 55%, #0f0 0%, transparent 45%),
+            radial-gradient(circle at 55% 45%, #00f 0%, transparent 45%);
+          mask: radial-gradient(
+            circle at 50% 50%,
+            transparent 0%,
+            transparent 10%,
+            black 25%
+          );
+          animation:
+            transform-animation 2s infinite alternate,
+            opacity-animation 4s infinite;
+          animation-timing-function: cubic-bezier(0.6, 0.8, 0.5, 1);
+        }
+
+        @keyframes transform-animation {
+          0% { transform: translateX(-55%); }
+          100% { transform: translateX(55%); }
+        }
+
+        @keyframes opacity-animation {
+          0%,100% { opacity: 0; }
+          15% { opacity: 1; }
+          65% { opacity: 0; }
+        }
+
+        .loader-letter {
+          display: inline-block;
+          opacity: 0;
+          animation: loader-letter-anim 4s infinite linear;
+          z-index: 2;
+          margin: 0 2px;
+        }
+
+        @keyframes loader-letter-anim {
+          0% { opacity: 0; }
+          5% { opacity: 1; text-shadow: 0 0 4px #fff; transform: scale(1.05) translateY(-2px); }
+          20% { opacity: 0.2; }
+          100% { opacity: 0; }
+        }
+
+        /* Audio play button styles (inserted) */
+    .btn-wrapper {
+      --width: 150px;
+      --height: 60px;
+      --padding: 8px;
+      --border-radius: 24px;
+      --dot-size: 8px;
+      --btn-color: #000000;
+      --hue: 14deg;
+      --animation-duration: 1.2s;
+
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--width);
+      height: var(--height);
+      border-radius: var(--border-radius);
+      background-color: #00000008;
+      box-shadow:
+        1px 1px 2px 0 #fffd,
+        2px 2px 2px #0001 inset,
+        2px 2px 4px #0001 inset,
+        2px 2px 8px #0001 inset;
+      perspective: 150px;
+      cursor: pointer;
+      user-select: none;
+      transition:
+        box-shadow 0.05s linear,
+        transform 0.05s linear;
+    }
+
+    .toggle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: 5;
+      cursor: pointer;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      gap: 0.25em;
+      text-align: left;
+      padding: 0 var(--height) 0 calc(var(--padding) * 2);
+      width: calc(100% - 2 * var(--padding));
+      height: calc(100% - 2 * var(--padding));
+      border-radius: calc(var(--border-radius) - var(--padding));
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(#fff2, #0001), var(--btn-color);
+      box-shadow:
+        1px 1px 2px -1px #fff inset,
+        0 2px 1px #00000010,
+        0 4px 2px #00000010,
+        0 8px 4px #00000010,
+        0 16px 8px #00000010,
+        0 32px 16px #00000010;
+      transition:
+        transform 0.15s cubic-bezier(0.25, 1.5, 0.5, 1.5),
+        box-shadow 0.15s ease,
+        filter 0.15s ease;
+      z-index: 2;
+    }
+
+    .btn-txt {
+      position: absolute;
+      font-family: "Montserrat", "Manrope", sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.616);
+      background-image: linear-gradient(#000a, #555);
+      background-clip: text;
+      filter: drop-shadow(0 1px 0px #fff) drop-shadow(0 -1px 0px #0005);
+      transition: opacity 0.2s ease;
+    }
+
+    .playing { opacity: 0; }
+
+    .toggle:checked ~ .btn .play { opacity: 0; }
+    .toggle:checked ~ .btn .playing { opacity: 1; }
+
+    .dot {
+      position: absolute;
+      top: 50%;
+      right: calc(var(--height) / 2 - var(--padding) / 2);
+      width: var(--dot-size);
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      background-color: hsla(var(--hue), 0%, 50%, 0.1);
+      border: 1px solid hsla(var(--hue), 0%, 60%, 0.6);
+      box-shadow:
+        1px 1px 2px -1px #fffe inset,
+        0 2px 1px #00000010,
+        0 4px 2px #00000010,
+        0 8px 4px #00000010;
+      pointer-events: none;
+      z-index: 3;
+      transform: translateY(-50%);
+      transition: all 0.15s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.8) translateY(-50%); opacity: 0.4; }
+      50% { transform: scale(1.3) translateY(-50%); opacity: 1; }
+    }
+
+    .toggle:checked ~ .btn .dot {
+      animation: pulse var(--animation-duration) ease-in-out infinite;
+      background-color: hsl(var(--hue), 90%, 50%);
+      box-shadow:
+        0 0 6px 1px hsl(var(--hue), 100%, 50%),
+        0 0 20px 5px hsl(var(--hue), 100%, 60%, 0.4);
+    }
+
+    .btn-wrapper:hover .btn,
+    .btn-wrapper:focus-within .btn {
+      transform: translate3d(0, -2px, 2px);
+      filter: drop-shadow(var(--padding) 0 var(--padding) hsla(var(--hue), 70%, 60%, 0.6));
+    }
+
+    .btn-wrapper:active .btn {
+      transform: translate3d(0, 2px, -2px);
+      box-shadow:
+        1px 1px 2px 0 #fff,
+        2px 2px 2px #0001 inset,
+        2px 2px 4px #0001 inset,
+        2px 2px 8px #0001 inset,
+        0 0 32px 2px hsla(var(--hue), 50%, 50%, 0.5) inset;
+    }
+
+        /* Custom upload button */
+    #uploadBtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border-radius: 28px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #001400;
+      background: linear-gradient(90deg, #0be780 0%, #00cc6a 100%);
+      box-shadow: 0 8px 24px rgba(11, 231, 128, 0.12), 0 2px 6px rgba(0,0,0,0.25);
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      user-select: none;
+    }
+
+    /* subtle icon before text (uses Font Awesome loaded in the page) */
+    #uploadBtn::before {
+      content: "\f093"; /* fa-file-upload / fa-upload icon (Font Awesome) */
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      margin-right: 8px;
+      color: rgba(0,0,0,0.85);
+      font-size: 1rem;
+    }
+
+    #uploadBtn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 36px rgba(11, 231, 128, 0.14);
+      opacity: 0.98;
+    }
+
+    #uploadBtn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 18px rgba(11, 231, 128, 0.10);
+    }
+
+    /* disabled appearance when analyze not enabled */
+    #uploadBtn[disabled],
+    #uploadBtn.disabled {
+      opacity: 0.5;
+      filter: grayscale(0.15);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* small screens */
+    @media (max-width: 480px) {
+      #uploadBtn {
+        padding: 9px 14px;
+        border-radius: 22px;
+        font-size: 0.9rem;
+      }
+      #uploadBtn::before { margin-right:6px; font-size:0.95rem; }
+    }
+
+    /* Responsive Styles */
+        @media (max-width: 992px) {
+            .nav-links {
+                gap: 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hamburger {
+                display: block;
+            }
+            
+            .audio-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .content {
+                padding: 10px;
+            }
+            
+            .btn {
+                padding: 8px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+   <!-- Navbar -->
+    <nav class="navbar">
+        <a href="#" class="logo">DeepfakeDetect</a>
+        
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="/about.html">About Us</a>
+            <a href="contact.html">Contact Us</a>
+        </div>
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="close-btn" id="closeBtn">
+            <i class="fas fa-times"></i>
+        </button>
+        <a href="/index.html">Home</a>
+        <a href="/about.html">About Us</a>
+        <a href="/contact.html">Contact Us</a>
+    </div>
+
+    <!-- TIMIT-TTS Showcase -->
+    <div class="container">
+        <header>
+            <div class="container">
+                <h1>TIMIT-TTS Dataset</h1>
+                <div class="subtitle">Multimodal Synthetic Media Detection</div>
+            </div>
+        </header>
+        
+        <div class="container">
+            <div class="card">
+                <h2 class="card-title">Audio Sample Analysis</h2>
+                <p>Upload or select a sample from our dataset to analyze for synthetic speech characteristics.</p>
+                
+                <div class="audio-controls">
+                    <input type="file" id="audioUpload" name="audio" accept="audio/*" style="display: none;">
+                    <label for="audioUpload" class="btn" id="uploadBtn">Upload Audio</label>
+                    <span id="audioFilename" style="margin-left:12px; color:var(--dark-color); font-weight:600;"></span>
+
+                    <!-- Play control -->
+                    <label class="btn-wrapper" id="playWrapper" style="display:none; margin-left:12px;">
+                      <input type="checkbox" class="toggle" id="playToggle" />
+                      <div class="btn">
+                        <span class="btn-txt play">Play</span>
+                        <span class="btn-txt playing">Playing</span>
+                        <div class="dot"></div>
+                      </div>
+                    </label>
+
+                    <!-- hidden actual audio element -->
+                    <audio id="audioPlayer" preload="auto" style="display:none;"></audio>
+                </div>
+                
+                <button id="analyzeBtn" disabled>Analyze for Synthetic Speech</button>
+                
+                <div class="visualization" id="waveform" style="height: 180px;">
+                    <canvas id="waveformCanvas"></canvas>
+                </div>
+                
+                <div id="resultContainer" style="display: none;">
+                    <h3 style="color: var(--primary-color); margin-top: 20px;">Analysis Results</h3>
+                    <div class="result-display" id="resultDisplay">
+                        Results will appear here
+                    </div>
+                    <div class="confidence-meter" style="margin-top: 15px;">
+                        <div class="confidence-fill" id="confidenceBar" style="width: 50%;"></div>
+                    </div>
+                    <p style="margin: 10px 0; font-size: 0.95rem;">Confidence: <span id="confidenceValue">0</span>%</p>
+                    
+                    <h4 style="color: var(--primary-color); margin-top: 15px; margin-bottom: 10px;">Detected Features</h4>
+                    <div class="features-grid" id="featuresGrid" style="max-height: 120px; overflow-y: auto;">
+                        <!-- Features will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+           
+        </div>
+        
+        <footer>
+            <div class="container">
+                <p>Research prototype for synthetic media detection | TIMIT-TTS Dataset</p>
+                <p style="margin-top: 10px;">&copy; Hemanth Boddana.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Loader (hidden by default) -->
+    <div id="pageLoader" class="loader-wrapper" style="display:none; pointer-events:auto;">
+      <span class="loader-letter">A</span>
+      <span class="loader-letter">N</span>
+      <span class="loader-letter">A</span>
+      <span class="loader-letter">L</span>
+      <span class="loader-letter">Y</span>
+      <span class="loader-letter">Z</span>
+      <span class="loader-letter">I</span>
+      <span class="loader-letter">N</span>
+      <span class="loader-letter">G</span>
+      <div class="loader" aria-hidden="true"></div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const closeBtn = document.getElementById('closeBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        // Toggle mobile menu
+        function toggleMenu() {
+            mobileMenu.classList.toggle('active');
+        }
+        
+        hamburger.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        
+        // Close menu when clicking on a link
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+        
+        // Close menu when clicking outside
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) {
+                toggleMenu();
+            }
+        });
+        
+        // Make navbar more opaque when scrolling
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 10) {
+                navbar.style.background = 'rgba(0, 0, 0, 0.9)';
+            } else {
+                navbar.style.background = 'rgba(0, 0, 0, 0.7)';
+            }
+        });
+
+    // TIMIT-TTS Functionality (upload -> server inference) + realtime waveform from audio
+    document.addEventListener('DOMContentLoaded', function() {
+        // DOM elements
+        const audioUpload = document.getElementById('audioUpload');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultDisplay = document.getElementById('resultDisplay');
+        const confidenceBar = document.getElementById('confidenceBar');
+        const confidenceValue = document.getElementById('confidenceValue');
+        const featuresGrid = document.getElementById('featuresGrid');
+        const waveform = document.getElementById('waveform');
+        const waveformCanvas = document.getElementById('waveformCanvas');
+        const audioFilename = document.getElementById('audioFilename');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const playWrapper = document.getElementById('playWrapper');
+        const playToggle = document.getElementById('playToggle');
+
+        // Canvas init
+        function resizeCanvas() {
+            waveformCanvas.width = Math.max(300, waveform.offsetWidth - 40);
+            waveformCanvas.height = Math.max(120, waveform.offsetHeight - 20);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        const ctx = waveformCanvas.getContext('2d');
+
+        // WebAudio analyser variables
+        let audioCtx = null;
+        let sourceNode = null;
+        let analyser = null;
+        let dataArray = null;
+        let bufferLength = 0;
+        let rafId = null;
+        let isAnalyserActive = false;
+
+        // Fallback simulated waveform draw (keeps visual when there's no playback)
+        function drawFallbackWave() {
+            ctx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+            const width = waveformCanvas.width;
+            const height = waveformCanvas.height;
+            const centerY = height / 2;
+            ctx.strokeStyle = "rgba(11, 231, 128, 0.12)";
+            ctx.lineWidth = 1;
+            for (let y = 0; y <= height; y += height / 4) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+            }
+            ctx.strokeStyle = "var(--primary-color)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            const points = 200;
+            for (let i = 0; i <= points; i++) {
+                const x = (i / points) * width;
+                const variation = Math.sin(i * 0.1) * 0.7 + Math.sin(i * 0.3) * 0.3;
+                const y = centerY + (Math.random() * 0.5 + 0.5 * variation) * (centerY - 10);
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        // Draw live waveform using analyser
+        function drawLiveWave() {
+            if (!analyser) return;
+            analyser.getByteTimeDomainData(dataArray);
+
+            ctx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+            const width = waveformCanvas.width;
+            const height = waveformCanvas.height;
+            const sliceWidth = width * 1.0 / bufferLength;
+            let x = 0;
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "rgba(11, 231, 128, 1)";
+            ctx.beginPath();
+
+            for (let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0; // normalized 0..2
+                const y = v * (height / 2);
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                x += sliceWidth;
+            }
+            ctx.lineTo(width, height / 2);
+            ctx.stroke();
+
+            // soft glow
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = 'rgba(11, 231, 128, 0.12)';
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            x = 0;
+            for (let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * (height / 2);
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                x += sliceWidth;
+            }
+            ctx.stroke();
+            ctx.globalCompositeOperation = 'source-over';
+
+            // request next frame
+            rafId = requestAnimationFrame(drawLiveWave);
+        }
+
+        // Start analyser (create AudioContext on user gesture)
+        function startAnalyserIfNeeded() {
+            if (isAnalyserActive) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                // create source from audio element
+                if (sourceNode) {
+                    try { sourceNode.disconnect(); } catch (e) {}
+                    sourceNode = null;
+                }
+                sourceNode = audioCtx.createMediaElementSource(audioPlayer);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 2048;
+                bufferLength = analyser.fftSize;
+                dataArray = new Uint8Array(bufferLength);
+
+                // connect nodes
+                sourceNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
+
+                isAnalyserActive = true;
+            } catch (err) {
+                console.warn("AudioContext / analyser not available:", err);
+                isAnalyserActive = false;
+            }
+        }
+
+        // Stop analyser & animation
+        function stopAnalyser() {
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+            if (analyser) {
+                try { analyser.disconnect(); } catch (e) {}
+                analyser = null;
+            }
+            if (sourceNode) {
+                try { sourceNode.disconnect(); } catch (e) {}
+                sourceNode = null;
+            }
+            isAnalyserActive = false;
+            drawFallbackWave();
+        }
+
+        // When a file is selected: show filename, enable analyze, load into audio player
+        audioUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            audioFilename.textContent = file.name;
+            const url = URL.createObjectURL(file);
+            audioPlayer.src = url;
+            analyzeBtn.disabled = false;
+            // show play control
+            if (playWrapper) playWrapper.style.display = 'inline-flex';
+            if (playToggle) playToggle.checked = false;
+            // redraw fallback waveform until playback starts
+            drawFallbackWave();
+        });
+
+        // Play toggle behavior: control hidden audio element and analyser
+        if (playToggle) {
+            playToggle.addEventListener('change', async function() {
+                if (!audioPlayer.src) { playToggle.checked = false; return; }
+
+                if (playToggle.checked) {
+                    // ensure AudioContext is resumed / created
+                    try {
+                        startAnalyserIfNeeded();
+                        if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+                    } catch (e) { console.warn(e); }
+
+                    audioPlayer.play().catch((err) => {
+                        console.warn("play failed:", err);
+                        playToggle.checked = false;
+                    });
+
+                    // start animation using analyser if available
+                    if (isAnalyserActive && analyser) {
+                        // cancel existing frame if any
+                        if (rafId) cancelAnimationFrame(rafId);
+                        drawLiveWave();
+                    } else {
+                        // fallback animated waveform (simulated)
+                        if (rafId) cancelAnimationFrame(rafId);
+                        function fallbackLoop() { drawFallbackWave(); rafId = requestAnimationFrame(fallbackLoop); }
+                        fallbackLoop();
+                    }
+                } else {
+                    audioPlayer.pause();
+                    // stop animation but keep small static waveform
+                    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+                    drawFallbackWave();
+                }
+            });
+        }
+
+        // Also handle native play/pause on the audio element (in case user triggers it programmatically)
+        audioPlayer.addEventListener('play', function() {
+            // sync toggle
+            if (playToggle && !playToggle.checked) playToggle.checked = true;
+            startAnalyserIfNeeded();
+            if (isAnalyserActive && analyser) {
+                if (rafId) cancelAnimationFrame(rafId);
+                drawLiveWave();
+            } else {
+                if (rafId) cancelAnimationFrame(rafId);
+                function fallbackLoop() { drawFallbackWave(); rafId = requestAnimationFrame(fallbackLoop); }
+                fallbackLoop();
+            }
+        });
+
+        audioPlayer.addEventListener('pause', function() {
+            if (playToggle && playToggle.checked) playToggle.checked = false;
+            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+            drawFallbackWave();
+        });
+
+        // When audio ends, reset toggle state & analyser
+        audioPlayer.addEventListener('ended', function() {
+            if (playToggle) playToggle.checked = false;
+            stopAnalyser();
+        });
+
+        // add helper functions to show/hide loader
+        function showLoader() {
+            const loader = document.getElementById('pageLoader');
+            if (!loader) return;
+            loader.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('pageLoader');
+            if (!loader) return;
+            loader.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Analyze: send file to /predict and render results
+        analyzeBtn.addEventListener('click', async function() {
+            const file = audioUpload.files[0];
+            if (!file) return;
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = "Analyzing...";
+            resultDisplay.textContent = "Analyzing...";
+            resultDisplay.className = "result-display";
+            resultContainer.style.display = "block";
+
+            showLoader(); // show loader
+
+            try {
+                const form = new FormData();
+                form.append('audio', file, file.name);
+
+                const resp = await fetch('/predict', {
+                    method: 'POST',
+                    body: form
+                });
+
+                if (!resp.ok) {
+                    const err = await resp.json().catch(()=>({error:resp.statusText}));
+                    throw new Error(err.error || resp.statusText || 'Server error');
+                }
+
+                const data = await resp.json();
+                // backend returns: { label, confidence, probs, filename }
+                const label = data.label || 'unknown';
+                const conf = typeof data.confidence === 'number' ? Math.round(data.confidence * 100) : 0;
+
+                if (label.toLowerCase().includes('synthetic') || label.toLowerCase().includes('fake')) {
+                    resultDisplay.textContent = "SYNTHETIC SPEECH DETECTED";
+                    resultDisplay.className = "result-display synthetic";
+                } else {
+                    resultDisplay.textContent = "NATURAL SPEECH DETECTED";
+                    resultDisplay.className = "result-display real";
+                }
+
+                confidenceBar.style.width = conf + "%";
+                confidenceValue.textContent = conf;
+
+                featuresGrid.innerHTML = "";
+                if (Array.isArray(data.probs)) {
+                    const ul = document.createElement('div');
+                    ul.style.fontSize = "0.95rem";
+                    ul.style.marginTop = "10px";
+                    ul.innerHTML = `<strong>Model probabilities:</strong><br> ${JSON.stringify(data.probs)}`;
+                    featuresGrid.appendChild(ul);
+                }
+
+            } catch (err) {
+                resultDisplay.textContent = "Error: " + (err.message || "processing failed");
+                resultDisplay.className = "result-display";
+                console.error(err);
+            } finally {
+                hideLoader();
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = "Analyze for Synthetic Speech";
+            }
+        });
+
+        // initial render
+        drawFallbackWave();
+    });
+    </script>
+</body>
+</html>
