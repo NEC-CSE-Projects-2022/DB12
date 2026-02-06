@@ -1,107 +1,104 @@
----
+# 📦 Dataset Title
 
-## 📦 Dataset Used
-
-👉 **TIMIT-TTS Audio Deepfake Detection Dataset**  
-🔗 [Download Dataset](https://drive.google.com/drive/folders/1rSkdHOjh1O82u4pFjhPRkM-UN8AtkeO7?usp=sharing)
+**TIMIT-TTS Audio Deepfake Detection Dataset**
 
 ---
 
-## 📊 Dataset Description
+## 🚀 Usage of Dataset
 
-The dataset used in this project is derived from the **TIMIT-TTS corpus**, a large-scale synthetic speech dataset created to support research in **audio deepfake detection** and **synthetic media forensics**. Due to its large size, the dataset is hosted on **Google Drive** instead of GitHub.
+This dataset is designed for **training, validation, and evaluation of audio deepfake detection models**.  
+It supports research in **synthetic media forensics** and is particularly well-suited for **speaker embedding–based approaches** such as **ECAPA-TDNN**.
 
-This dataset contains a combination of **real human speech** and **synthetic speech generated using multiple Text-to-Speech (TTS) systems**, making it highly suitable for training and evaluating deepfake detection models.
+The dataset can be used to:
+- Benchmark audio deepfake detection systems  
+- Evaluate robustness against multiple TTS generators  
+- Compare detection models under reproducible conditions  
 
 ---
 
-## 🗂 Dataset Organization
+## 📊 Dataset Information
 
-The dataset is structured into three standard subsets to support proper machine learning experimentation:
+- **📛 Dataset Name:** TIMIT-TTS Audio Deepfake Detection Dataset  
+- **🌐 Source:** Derived from the original TIMIT corpus and synthetic speech generated using multiple Text-to-Speech (TTS) systems  
+- **🧠 Domain:** Audio Processing / Speech Forensics  
+- **🎯 Task:** Audio Deepfake Detection  
+- **🧩 Problem Type:** Binary Classification (Real vs Fake)  
+- **📁 File Format:** WAV  
+- **🔗 Dataset Link:**   [Download Dataset](https://drive.google.com/drive/folders/1rSkdHOjh1O82u4pFjhPRkM-UN8AtkeO7?usp=sharing)
+---
+---
 
-- **Train Dataset**  
-  Used to train the deepfake detection model.  
-  Contains the largest portion of real and synthetic samples.
+## 📈 Dataset Overview
 
-- **Validation Dataset**  
-  Used for hyperparameter tuning, threshold selection, and preventing overfitting.
+- **📦 Total Records:** ~80,000 audio samples  
+- **🏷 Labeled Records:** ~80,000  
+- **📚 Classes:**  
+  - Real (Human Speech)  
+  - Fake (TTS-Generated Speech)  
+- **✍ Annotation Type:** Binary labels (Real / Synthetic)  
 
-- **Test Dataset**  
-  Used exclusively for final performance evaluation and result reporting.
+### 🗂 Dataset Split
+- **Train Set:** Used for model training  
+- **Validation Set:** Used for hyperparameter tuning and overfitting prevention  
+- **Test Set:** Used for final evaluation and reporting  
 
-Each subset includes both **real** and **fake (TTS-generated)** audio samples.
+Each subset contains both real and synthetic audio samples.
+
+---
+
+## ❓ Why This Dataset?
+
+- 🤖 Synthetic speech generated using **12 different TTS models**  
+- 🎙 Includes realistic synthesis artifacts and voice variations  
+- ⚖ Reflects real-world **class imbalance** scenarios  
+- 🔊 Standardized audio format compatible with deep learning pipelines  
+- 📊 Enables fair comparison of audio deepfake detection systems  
 
 ---
 
 ## 🎙 Audio Characteristics
 
-- **Audio Format:** WAV  
+- **Format:** WAV  
 - **Sampling Rate:** 16 kHz  
 - **Channels:** Mono  
-- **Average Duration:** ~3 seconds per sample  
+- **Average Duration:** ~3 seconds  
 - **Language:** English  
 
-All audio samples are resampled and standardized to ensure compatibility with **ECAPA-TDNN** speaker embedding extraction.
+All audio samples are resampled and standardized for consistency.
 
 ---
 
 ## 🤖 Synthetic Speech Details
 
-The synthetic portion of the dataset was generated using **12 different Text-to-Speech (TTS) models**, covering a wide variety of synthesis techniques and voice characteristics. This diversity introduces realistic deepfake artifacts and variations, helping the detection model generalize better to unseen TTS systems.
-
-Synthetic samples may include variations such as:
-
-- Different speaking styles  
-- Voice timbre changes  
+The synthetic portion of the dataset is generated using **multiple TTS architectures**, introducing diversity in:
+- Speaking styles  
+- Voice timbre  
+- Pitch and timing  
 - Compression artifacts  
-- Pitch and timing variations  
 - Background noise and post-processing effects  
+
+This helps improve generalization to unseen TTS systems.
 
 ---
 
 ## 🗣 Real Speech Details
 
-The real speech samples originate from the **original TIMIT dataset**, which contains phonetically rich and carefully recorded human speech from multiple speakers. These samples serve as the ground truth for genuine human audio.
+Real speech samples are sourced from the **original TIMIT dataset**, which contains carefully recorded, phonetically rich human speech from multiple speakers.  
+These samples serve as ground truth for genuine audio.
 
 ---
 
-## 📈 Dataset Scale (Approximate)
+## 🧩 Features Used
 
-- **Total Audio Samples:** ~80,000  
-- **Number of Speakers:** 37  
-- **Real Samples:** ~6,600  
-- **Synthetic Samples:** ~73,000  
-- **TTS Models Used:** 12  
-
-This class imbalance reflects real-world scenarios where synthetic audio can be generated at scale.
+- **Feature 1:** ECAPA-TDNN Speaker Embeddings  
+- **Feature 2:** Spectral and prosodic speech characteristics  
+- **Feature 3:** Temporal patterns and synthesis artifacts  
 
 ---
 
-## 🎯 Purpose of the Dataset
+## 🧠 Summary
 
-This dataset is designed to:
+The **TIMIT-TTS Audio Deepfake Detection Dataset** is a large-scale dataset created to support research in **audio deepfake detection** and **synthetic media forensics**.  
+By combining real speech with diverse synthetic samples generated using multiple TTS systems, the dataset enables robust evaluation of detection models under realistic conditions.
 
-- Benchmark **audio deepfake detection systems**
-- Evaluate robustness against multiple TTS generators
-- Support research in **speaker embedding-based detection**
-- Enable reproducible and fair comparisons between detection models
-
----
-
-## 🔐 Ethical Considerations
-
-- The dataset contains **only synthetic or publicly available speech**
-- No personal, sensitive, or identifiable user data is included
-- Intended strictly for **research and academic purposes**
-
----
-
-## 📌 Notes
-
-- The dataset is not included directly in this repository due to size limitations.
-- Users must download it separately from Google Drive.
-- Proper citation of the original **TIMIT-TTS paper** is required when using this dataset in publications.
-
-
-
----
+The dataset is intended strictly for **research and academic use**, and proper citation of the original **TIMIT-TTS paper** is required when used in publications.
